@@ -33,40 +33,46 @@ const ListadoEmployees = () => {
 
   return (
     <View style={styles.container}>
+
+      {/* Header */}
+      <View style={styles.header}>
+        <Ionicons name="flash" size={20} color="#F5A623" />
+        <Text style={styles.headerTitulo}>Empleados</Text>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{empleadosFiltrados.length}</Text>
+        </View>
+      </View>
+
+      {/* Buscador */}
       <View style={styles.searchBox}>
-        <Ionicons
-          name="search-outline"
-          size={18}
-          color="#9CA3AF"
-          style={{ marginRight: 8 }}
-        />
+        <Ionicons name="search-outline" size={18} color="#1A73E8" style={{ marginRight: 8 }} />
         <TextInput
           style={styles.input}
           placeholder="Buscar empleado..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor="#93C5FD"
           value={busqueda}
           onChangeText={setBusqueda}
         />
         {busqueda.length > 0 && (
-          <Ionicons
-            name="close-circle"
-            size={18}
-            color="#9CA3AF"
-            onPress={() => setBusqueda("")}
-          />
+          <Ionicons name="close-circle" size={18} color="#93C5FD" onPress={() => setBusqueda("")} />
         )}
       </View>
+
       {empleadosFiltrados.length === 0 ? (
         <View style={styles.empty}>
-          <Ionicons name="people-outline" size={60} color="#E5E7EB" />
+          <View style={styles.emptyIcon}>
+            <Ionicons name="people-outline" size={50} color="#93C5FD" />
+          </View>
           <Text style={styles.emptyText}>No se encontraron empleados</Text>
+          <Text style={styles.emptySubText}>Intenta con otro término de búsqueda</Text>
         </View>
       ) : (
         <FlatList
           data={empleadosFiltrados}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <Card empleado={item} 
+            <Card
+              empleado={item}
               onPress={() => {
                 setEmpleadoSeleccionado(item.id);
                 setModalVisible(true);
@@ -77,6 +83,7 @@ const ListadoEmployees = () => {
           showsVerticalScrollIndicator={false}
         />
       )}
+
       <ModalEmployee
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -93,7 +100,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: "#F0F6FF",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+    gap: 8,
+  },
+  headerTitulo: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1A4F7A",
+    letterSpacing: 0.5,
+  },
+  badge: {
+    backgroundColor: "#1A73E8",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
   },
   searchBox: {
     flexDirection: "row",
@@ -103,16 +134,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     height: 48,
     marginBottom: 16,
-    shadowColor: "#000",
+    borderWidth: 1.5,
+    borderColor: "#93C5FD",
+    shadowColor: "#1A73E8",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
   input: {
     flex: 1,
     fontSize: 14,
-    color: "#111827",
+    color: "#1E3A5F",
   },
   empty: {
     flex: 1,
@@ -120,9 +153,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 50,
   },
+  emptyIcon: {
+    backgroundColor: "#D6E8F7",
+    borderRadius: 50,
+    padding: 20,
+    marginBottom: 16,
+  },
   emptyText: {
-    marginTop: 10,
-    color: "#9CA3AF",
+    color: "#1A4F7A",
     fontSize: 16,
+    fontWeight: "600",
+  },
+  emptySubText: {
+    color: "#7BA7C7",
+    fontSize: 13,
+    marginTop: 4,
   },
 });

@@ -16,7 +16,6 @@ const SelectField = ({ label, value, onValueChange, labelKey, valueKey, error }:
   const [opciones, setOpciones] = useState<any[]>([]);
   const [visible, setVisible] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState("Selecciona...");
-  console.log(opciones);
 
   useEffect(() => {
     fetchOpciones();
@@ -41,24 +40,28 @@ const SelectField = ({ label, value, onValueChange, labelKey, valueKey, error }:
     <View style={styles.wrapper}>
       <Text style={styles.label}>{label}</Text>
 
-      {/* Input que abre el modal */}
       <TouchableOpacity
-        style={[styles.container, error ? { borderColor: "red" } : null]}
+        style={[styles.container, error ? { borderColor: "#EF4444" } : null]}
         onPress={() => setVisible(true)}
       >
         <Text style={value ? styles.selectedText : styles.placeholder}>
           {selectedLabel}
         </Text>
-        <Ionicons name="chevron-down-outline" size={18} color="#9CA3AF" />
+        <Ionicons name="chevron-down-outline" size={18} color="#93C5FD" />
       </TouchableOpacity>
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      {/* Modal con opciones */}
       <Modal transparent animationType="fade" visible={visible}>
         <TouchableOpacity style={styles.overlay} onPress={() => setVisible(false)} activeOpacity={1}>
-          <View style={styles.modal}>
-            <Text style={styles.modalTitulo}>{label}</Text>
+          <TouchableOpacity style={styles.modal} activeOpacity={1}>
+
+            {/* Header */}
+            <View style={styles.modalHeader}>
+              <Ionicons name="people-outline" size={18} color="white" />
+              <Text style={styles.modalTitulo}>{label}</Text>
+            </View>
+
             <FlatList
               data={opciones}
               keyExtractor={(item) => item[valueKey].toString()}
@@ -67,16 +70,23 @@ const SelectField = ({ label, value, onValueChange, labelKey, valueKey, error }:
                   style={[styles.opcion, item[valueKey] === value ? styles.opcionActiva : null]}
                   onPress={() => handleSelect(item)}
                 >
-                  <Text style={[styles.opcionText, item[valueKey] === value ? styles.opcionTextActiva : null]}>
-                    {item[labelKey]}
-                  </Text>
+                  <View style={styles.opcionLeft}>
+                    <View style={styles.opcionAvatar}>
+                      <Text style={styles.opcionAvatarText}>
+                        {item[labelKey]?.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                    <Text style={[styles.opcionText, item[valueKey] === value ? styles.opcionTextActiva : null]}>
+                      {item[labelKey]}
+                    </Text>
+                  </View>
                   {item[valueKey] === value && (
-                    <Ionicons name="checkmark" size={18} color="#1A73E8" />
+                    <Ionicons name="checkmark-circle" size={20} color="white" />
                   )}
                 </TouchableOpacity>
               )}
             />
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
     </View>
@@ -95,88 +105,113 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 4,
     fontSize: 12,
-    color: "#6B7280",
+    color: "#1A73E8",
     zIndex: 1,
+    fontWeight: "600",
   },
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderWidth: 1.5,
-    borderColor: "#D1D5DB",
-    borderRadius: 8,
+    borderColor: "#93C5FD",
+    borderRadius: 10,
     backgroundColor: "white",
     height: 52,
     paddingHorizontal: 12,
-    shadowColor: "#000",
+    shadowColor: "#1A73E8",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3,
   },
   placeholder: {
     fontSize: 14,
-    color: "#9CA3AF",
+    color: "#93C5FD",
   },
   selectedText: {
     fontSize: 14,
-    color: "#111827",
+    color: "#1E3A5F",
+    fontWeight: "500",
   },
   error: {
-    color: "red",
+    color: "#EF4444",
     fontSize: 11,
     marginTop: 4,
     marginLeft: 16,
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(10, 30, 60, 0.6)",
     justifyContent: "center",
     padding: 24,
   },
   modal: {
-    backgroundColor: "white",
-    borderRadius: 16,
+    backgroundColor: "#1A4F7A",
+    borderRadius: 20,
     padding: 20,
     maxHeight: "60%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginBottom: 16,
   },
   modalTitulo: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#111827",
-    marginBottom: 12,
-    textAlign: "center",
+    color: "white",
+    letterSpacing: 0.5,
   },
   opcion: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 14,
-    borderColor: "#0b0d10",
-    borderWidth: 0.3,
-    borderRadius: 8,
-    marginBottom: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderColor: "rgba(255,255,255,0.2)",
+    borderWidth: 0.5,
+    borderRadius: 10,
+    marginBottom: 6,
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+  opcionLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  opcionAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  opcionAvatarText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 14,
   },
   opcionActiva: {
-    backgroundColor: "#EFF6FF",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    borderBottomColor: "#F3F4F6", 
-    
+    backgroundColor: "white",
+    borderColor: "white",
   },
   opcionText: {
     fontSize: 15,
-    color: "#374151",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    borderBottomColor: "#F3F4F6",
-
+    color: "white",
+    fontWeight: "400",
   },
   opcionTextActiva: {
     color: "#1A73E8",
-    fontWeight: "600",
-    borderBottomColor: "#F3F4F6",
-
+    fontWeight: "700",
   },
 });
 

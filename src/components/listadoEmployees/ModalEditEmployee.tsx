@@ -49,119 +49,126 @@ const ModalEditEmployee = ({ visible, onClose, empleado, onSuccess }: ModalEditP
 
   return (
     <Modal transparent animationType="slide" visible={visible}>
-  <TouchableOpacity
-    style={styles.overlay}
-    onPress={onClose}
-    activeOpacity={1}
-  >
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ width: "100%", justifyContent: "flex-end" }}
-    >
-      <TouchableOpacity style={[styles.container, { maxHeight: "90%" }]} activeOpacity={1}>
-
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.titulo}>Editar Empleado</Text>
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <Ionicons name="close" size={20} color="#6B7280" />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView 
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+      <TouchableOpacity style={styles.overlay} onPress={onClose} activeOpacity={1}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ width: "100%", justifyContent: "flex-end" }}
         >
-          <Controller
-            control={control} name="name"
-            render={({ field, fieldState }) => (
-              <View>
-                <InputText label="Nombre" placeholder="Nombre completo" icon="person-outline" onChangeText={field.onChange} value={field.value} />
-                {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
-              </View>
-            )}
-          />
-          <Controller
-            control={control} name="email"
-            render={({ field, fieldState }) => (
-              <View>
-                <InputText label="Correo" placeholder="correo@ejemplo.com" icon="mail-outline" keyboardType="email-address" onChangeText={field.onChange} value={field.value} />
-                {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
-              </View>
-            )}
-          />
-          <Controller
-            control={control} name="telefono"
-            render={({ field, fieldState }) => (
-              <View>
-                <InputText label="Teléfono" placeholder="809-000-0000" icon="call-outline" keyboardType="phone-pad" onChangeText={field.onChange} value={field.value} />
-                {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
-              </View>
-            )}
-          />
-          <Controller
-            control={control} name="cedula"
-            render={({ field, fieldState }) => (
-              <View>
-                <InputText label="Cédula" placeholder="001-0000000-0" icon="card-outline" keyboardType="numeric" onChangeText={field.onChange} value={field.value} />
-                {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
-              </View>
-            )}
-          />
-          <Controller
-            control={control} name="cumpleaños"
-            render={({ field, fieldState }) => (
-              <View>
-                <DateField label="Fecha de Nacimiento" placeholder="Selecciona fecha" onChangeText={field.onChange} value={field.value} autoCapitalize="none" />
-                {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
-              </View>
-            )}
-          />
-          <Controller
-            control={control} name="direccion"
-            render={({ field, fieldState }) => (
-              <View>
-                <InputText label="Dirección" placeholder="San Pedro de Macorís" icon="location-outline" onChangeText={field.onChange} value={field.value} />
-                {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
-              </View>
-            )}
-          />
-          <Controller
-            control={control} name="ciudad"
-            render={({ field, fieldState }) => (
-              <View>
-                <SelectCiudad label="Ciudad" placeholder="San Pedro de Macorís" onValueChange={field.onChange} labelKey="label"
-                  valueKey="value" value={field.value}/>
-                {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
-              </View>
-            )}
-          />
-          <Controller
-            control={control} name="sueldo"
-            render={({ field, fieldState }) => (
-              <View>
-                <InputText label="Sueldo" placeholder="45000" icon="cash-outline" keyboardType="numeric" onChangeText={field.onChange} value={field.value} />
-                {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
-              </View>
-            )}
-          />
+          <TouchableOpacity style={styles.container} activeOpacity={1}>
 
-          <TouchableOpacity style={styles.btnGuardar} onPress={handleSubmit(onSubmit)} disabled={isSubmitting}>
-            <Text style={styles.btnGuardarText}>Guardar Cambios</Text>
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <Ionicons name="flash" size={20} color="#F5A623" />
+                <Text style={styles.titulo}>Editar Empleado</Text>
+              </View>
+              <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+                <Ionicons name="close" size={20} color="#7BA7C7" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.divider} />
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              <Controller
+                control={control} name="name"
+                render={({ field, fieldState }) => (
+                  <View>
+                    <InputText label="Nombre" placeholder="Nombre completo" icon="person-outline" onChangeText={field.onChange} value={field.value} />
+                    {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
+                  </View>
+                )}
+              />
+              <Controller
+                control={control} name="email"
+                render={({ field, fieldState }) => (
+                  <View>
+                    <InputText label="Correo" placeholder="correo@ejemplo.com" icon="mail-outline" keyboardType="email-address" onChangeText={field.onChange} value={field.value} />
+                    {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
+                  </View>
+                )}
+              />
+              <Controller
+                control={control} name="telefono"
+                render={({ field, fieldState }) => (
+                  <View>
+                    <InputText label="Teléfono" placeholder="809-000-0000" icon="call-outline" keyboardType="phone-pad" onChangeText={field.onChange} value={field.value} />
+                    {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
+                  </View>
+                )}
+              />
+              <Controller
+                control={control} name="cedula"
+                render={({ field, fieldState }) => (
+                  <View>
+                    <InputText label="Cédula" placeholder="001-0000000-0" icon="card-outline" keyboardType="numeric" onChangeText={field.onChange} value={field.value} />
+                    {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
+                  </View>
+                )}
+              />
+              <Controller
+                control={control} name="cumpleaños"
+                render={({ field, fieldState }) => (
+                  <View>
+                    <DateField label="Fecha de Nacimiento" placeholder="Selecciona fecha" onChangeText={field.onChange} value={field.value} autoCapitalize="none" />
+                    {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
+                  </View>
+                )}
+              />
+              <Controller
+                control={control} name="direccion"
+                render={({ field, fieldState }) => (
+                  <View>
+                    <InputText label="Dirección" placeholder="San Pedro de Macorís" icon="location-outline" onChangeText={field.onChange} value={field.value} />
+                    {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
+                  </View>
+                )}
+              />
+              <Controller
+                control={control} name="ciudad"
+                render={({ field, fieldState }) => (
+                  <View>
+                    <SelectCiudad label="Ciudad" placeholder="San Pedro de Macorís" onValueChange={field.onChange} value={field.value} />
+                    {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
+                  </View>
+                )}
+              />
+              <Controller
+                control={control} name="sueldo"
+                render={({ field, fieldState }) => (
+                  <View>
+                    <InputText label="Sueldo" placeholder="45000" icon="cash-outline" keyboardType="numeric" onChangeText={field.onChange} value={field.value} />
+                    {fieldState.error && <Text style={styles.error}>{fieldState.error.message}</Text>}
+                  </View>
+                )}
+              />
+
+              <TouchableOpacity
+                style={[styles.btnGuardar, isSubmitting && { opacity: 0.7 }]}
+                onPress={handleSubmit(onSubmit)}
+                disabled={isSubmitting}
+              >
+                <Ionicons name="flash" size={16} color="#F5A623" style={{ marginRight: 8 }} />
+                <Text style={styles.btnGuardarText}>
+                  {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+
           </TouchableOpacity>
-        </ScrollView>
-
+        </KeyboardAvoidingView>
       </TouchableOpacity>
-    </KeyboardAvoidingView>
-  </TouchableOpacity>
-</Modal>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(10, 30, 60, 0.6)",
     justifyContent: "flex-end",
   },
   container: {
@@ -170,36 +177,58 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
     padding: 24,
     maxHeight: "90%",
+    shadowColor: "#1A4F7A",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 10,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 12,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   titulo: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#111827",
+    color: "#1A4F7A",
   },
   closeBtn: {
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#D6E8F7",
     borderRadius: 20,
     padding: 8,
   },
+  divider: {
+    height: 1,
+    backgroundColor: "#D6E8F7",
+    marginBottom: 16,
+  },
   error: {
-    color: "red",
+    color: "#EF4444",
     fontSize: 11,
     marginTop: -12,
     marginLeft: 16,
   },
   btnGuardar: {
-    backgroundColor: "#1A73E8",
+    backgroundColor: "#1A4F7A",
     borderRadius: 12,
     paddingVertical: 14,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     marginTop: 8,
     marginBottom: 20,
+    shadowColor: "#1A4F7A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   btnGuardarText: {
     color: "white",
