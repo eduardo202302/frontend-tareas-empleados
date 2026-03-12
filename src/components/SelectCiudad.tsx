@@ -1,16 +1,9 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-  FlatList,
-  TextInput,
-  Switch,
-} from "react-native";
+import {View,Text,StyleSheet,TouchableOpacity,Modal,FlatList,TextInput,Switch,} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ciudades from "../../ciudades.json";
+
+const LIMIT_OPTIONS = [20, 25, 50];
 
 interface SelectFieldProps {
   label: string;
@@ -20,12 +13,20 @@ interface SelectFieldProps {
   error?: string;
 }
 
-const SelectCiudad = ({ label, value, onValueChange, error }: SelectFieldProps) => {
+const SelectCiudad = ({
+  label,
+  value,
+  onValueChange,
+  error,
+}: SelectFieldProps) => {
   const [opciones, setOpciones] = useState<any[]>([]);
   const [visible, setVisible] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState("Selecciona...");
   const [search, setSearch] = useState("");
-  const [isActivo, setIsActivo] = useState(false);
+  const [isActivo, setIsActivo] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [limitVisible, setLimitVisible] = useState(false);
 
   useEffect(() => {
     const lista = ciudades.ciudades
@@ -44,15 +45,31 @@ const SelectCiudad = ({ label, value, onValueChange, error }: SelectFieldProps) 
     if (value) setSelectedLabel(value);
   }, [value]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
   const opcionesFiltradas = opciones.filter((c) =>
-    c.label.toLowerCase().includes(search.toLowerCase())
+    c.label.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const total = opcionesFiltradas.length;
+  const totalPaginas = Math.ceil(total / limit);
+  const inicio = (page - 1) * limit;
+  const opcionesPaginadas = opcionesFiltradas.slice(inicio, inicio + limit);
 
   const handleSelect = (item: any) => {
     onValueChange(item.value);
     setSelectedLabel(item.label);
     setVisible(false);
     setSearch("");
+    setPage(1);
+  };
+
+  const cerrar = () => {
+    setVisible(false);
+    setSearch("");
+    setPage(1);
   };
 
   return (
@@ -73,58 +90,175 @@ const SelectCiudad = ({ label, value, onValueChange, error }: SelectFieldProps) 
       <Modal transparent animationType="fade" visible={visible}>
         <TouchableOpacity
           style={styles.overlay}
-          onPress={() => { setVisible(false); setSearch(""); }}
+          onPress={cerrar}
           activeOpacity={1}
         >
           <TouchableOpacity style={styles.modal} activeOpacity={1}>
-
             {/* Header */}
             <View style={styles.modalHeader}>
-              <Ionicons name="location" size={18} color="white" />
-              <Text style={styles.modalTitulo}>{label}</Text>
               <Switch
                 value={isActivo}
                 onValueChange={setIsActivo}
-                trackColor={{ false: "rgba(255,255,255,0.3)", true: "#F5A623" }}
+                trackColor={{ false: "rgba(11, 11, 11, 0.3)", true: "#47ee44" }}
                 thumbColor="white"
+              />
+              <Text style={styles.modalTitulo}>{label}</Text>
+              <Ionicons
+                name="close"
+                size={36}
+                color="rgba(221, 20, 20, 0.7)"
+                onPress={cerrar}
               />
             </View>
 
+            {/* Búsqueda */}
             {isActivo && (
               <View style={styles.searchContainer}>
-                <Ionicons name="search-outline" size={16} color="rgba(255,255,255,0.7)" style={{ marginRight: 8 }} />
+                <Ionicons
+                  name="search-outline"
+                  size={16}
+                  color="rgba(9, 17, 36, 0.7)"
+                  style={{ marginRight: 8 }}
+                />
                 <TextInput
                   style={styles.searchInput}
-                  placeholder="Buscar ciudad..."
-                  placeholderTextColor="rgba(255,255,255,0.5)"
+                  placeholder="Buscar..."
+                  placeholderTextColor="rgba(11, 9, 9, 0.93)"
                   value={search}
                   onChangeText={setSearch}
                 />
                 {search ? (
                   <TouchableOpacity onPress={() => setSearch("")}>
-                    <Ionicons name="close-circle" size={16} color="rgba(255,255,255,0.7)" />
+                    <Ionicons
+                      name="close-circle"
+                      size={16}
+                      color="rgba(234, 7, 7, 0.7)"
+                    />
                   </TouchableOpacity>
                 ) : null}
               </View>
             )}
 
+            {/* Lista */}
             <FlatList
-              data={opcionesFiltradas}
+              data={opcionesPaginadas}
               keyExtractor={(item) => item.value}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={[styles.opcion, item.value === value ? styles.opcionActiva : null]}
+                  style={[
+                    styles.opcion,
+                    item.value === value ? styles.opcionActiva : null,
+                  ]}
                   onPress={() => handleSelect(item)}
                 >
-                  <Text style={[styles.opcionText, item.value === value ? styles.opcionTextActiva : null]}>
+                  <Text
+                    style={[
+                      styles.opcionText,
+                      item.value === value ? styles.opcionTextActiva : null,
+                    ]}
+                  >
                     {item.label}
                   </Text>
                   {item.value === value && (
-                    <Ionicons name="checkmark" size={18} color="#1A73E8" />
+                    <Ionicons name="checkmark" size={18} color="#010103" />
                   )}
                 </TouchableOpacity>
               )}
             />
+
+            {/* Paginación */}
+            {totalPaginas > 1 && (
+              <View style={styles.pagination}>
+                <TouchableOpacity
+                  style={[styles.btn, page === 1 && styles.btnDisabled]}
+                  onPress={() => setPage(page - 1)}
+                  disabled={page === 1}
+                >
+                  <Text style={styles.btnText}>‹</Text>
+                </TouchableOpacity>
+
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(
+                  (p) => (
+                    <TouchableOpacity
+                      key={p}
+                      style={[styles.btn, p === page && styles.btnActivo]}
+                      onPress={() => setPage(p)}
+                    >
+                      <Text
+                        style={[
+                          styles.btnText,
+                          p === page && styles.btnTextActivo,
+                        ]}
+                      >
+                        {p}
+                      </Text>
+                    </TouchableOpacity>
+                  ),
+                )}
+
+                <TouchableOpacity
+                  style={[
+                    styles.btn,
+                    page === totalPaginas && styles.btnDisabled,
+                  ]}
+                  onPress={() => setPage(page + 1)}
+                  disabled={page === totalPaginas}
+                >
+                  <Text style={styles.btnText}>›</Text>
+                </TouchableOpacity>
+
+                <Text style={styles.info}>
+                  {inicio + 1}-{Math.min(page * limit, total)} / {total}
+                </Text>
+
+                <View style={styles.limitRow}>
+                  <Text style={styles.info}>Filas:</Text>
+                  <TouchableOpacity
+                    style={styles.limitBtn}
+                    onPress={() => setLimitVisible(true)}
+                  >
+                    <Text style={styles.btnText}>{limit} ▾</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            {/* Modal selector de filas */}
+            <Modal transparent animationType="fade" visible={limitVisible}>
+              <TouchableOpacity
+                style={styles.limitOverlay}
+                onPress={() => setLimitVisible(false)}
+                activeOpacity={1}
+              >
+                <View style={styles.limitModal}>
+                  {LIMIT_OPTIONS.map((opt) => (
+                    <TouchableOpacity
+                      key={opt}
+                      style={[
+                        styles.limitOpcion,
+                        opt === limit && styles.limitOpcionActiva,
+                      ]}
+                      onPress={() => {
+                        setLimit(opt);
+                        setPage(1);
+                        setLimitVisible(false);
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.btnText,
+                          opt === limit && {
+                            fontWeight: "bold",
+                            color: "#1A73E8",
+                          },
+                        ]}
+                      >
+                        {opt}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </TouchableOpacity>
+            </Modal>
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
@@ -161,8 +295,8 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
-  placeholder: { fontSize: 14, color: "#93C5FD" },
-  selectedText: { fontSize: 14, color: "#1E3A5F", fontWeight: "500" },
+  placeholder: { fontSize: 14, color: "#0c0e10" },
+  selectedText: { fontSize: 14, color: "#090e15", fontWeight: "500" },
   error: { color: "#EF4444", fontSize: 11, marginTop: 4, marginLeft: 16 },
   overlay: {
     flex: 1,
@@ -171,27 +305,27 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modal: {
-    backgroundColor: "#1A4F7A",
+    backgroundColor: "#dfeff2",
     borderRadius: 20,
-    padding: 20,
-    maxHeight: "70%",
+    padding: 16,
+    height: "70%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
-    elevation: 10,
+    elevation: 4,
   },
   modalHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 14,
+    marginBottom: 12,
     paddingHorizontal: 4,
   },
   modalTitulo: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "white",
+    color: "#000",
     letterSpacing: 0.5,
   },
   searchContainer: {
@@ -205,7 +339,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.15)",
     marginBottom: 12,
   },
-  searchInput: { flex: 1, fontSize: 13, color: "white" },
+  searchInput: { flex: 1, fontSize: 13, color: "#000" },
   opcion: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -216,7 +350,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 10,
     marginBottom: 6,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "rgba(103, 162, 213, 0.1)",
   },
   opcionActiva: {
     backgroundColor: "white",
@@ -224,8 +358,55 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderColor: "white",
   },
-  opcionText: { fontSize: 15, color: "white", fontWeight: "400" },
+  opcionText: { fontSize: 15, color: "#0c0e10", fontWeight: "400" },
   opcionTextActiva: { color: "#1A73E8", fontWeight: "700" },
+  pagination: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginTop: 12,
+    gap: 4,
+  },
+  btn: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: "white",
+  },
+  btnActivo: { backgroundColor: "#1A73E8", borderColor: "#1A73E8" },
+  btnDisabled: { opacity: 0.4 },
+  btnText: { fontSize: 14, color: "#374151" },
+  btnTextActivo: { color: "white", fontWeight: "bold" },
+  info: { fontSize: 13, color: "#6B7280", marginLeft: 4 },
+  limitRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+    gap: 6,
+  },
+  limitBtn: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: "white",
+  },
+  limitOverlay: { flex: 1, justifyContent: "flex-end", padding: 24 },
+  limitModal: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  limitOpcion: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8 },
+  limitOpcionActiva: { backgroundColor: "#EFF6FF" },
 });
 
 export default SelectCiudad;
